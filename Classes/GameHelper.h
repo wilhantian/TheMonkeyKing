@@ -21,7 +21,6 @@ public:
     static void init(b2World* world);
     
     static std::set<entityx::Entity> queryEntities(cocos2d::Rect rect);
-    
 public:
     static b2World* world;
     

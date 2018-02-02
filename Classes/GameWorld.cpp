@@ -236,12 +236,14 @@ void ActorSystem::configure(EventManager &event_manager)
     event_manager.subscribe<ActorActionChangedEvent>(*this);
     event_manager.subscribe<ActorDirectionChangedEvent>(*this);
     event_manager.subscribe<EntityCollisionEvent>(*this);
+    event_manager.subscribe<DiedEvent>(*this);
 }
 
 void ActorSystem::receive(const ActorActionChangedEvent& eve)
 {
     auto e = eve.e;
     auto actor = e.component<ActorComp>();
+
     if(actor && actor->action != eve.action)
     {
         actor->action = eve.action;
@@ -257,6 +259,7 @@ void ActorSystem::receive(const ActorDirectionChangedEvent& eve)
 {
     auto e = eve.e;
     auto actor = e.component<ActorComp>();
+
     if(actor && actor->dir != eve.dir)
     {
         actor->dir = eve.dir;
@@ -548,9 +551,12 @@ void MeleeSystem::receive(const MeleeAttackEvent& eve)
     
     auto entities = GameHelper::queryEntities(Rect(x, y, w, h));
     // TODO
-    for(auto e : entities)
+    for(auto t : entities)
     {
         CCLOG("xxx = %d", e.id());
+        
+        DamageEvent damageEvent(e, t, melee->damage);
+        __damageEvents.push_back(damageEvent);
     }
 }
 
@@ -572,12 +578,19 @@ void MeleeSystem::receive(const MeleeAttackEndEvent &eve)
 
 void MeleeSystem::update(entityx::EntityManager &es, entityx::EventManager &events, TimeDelta dt)
 {
-    // 派发事件
+    // 派发动作事件
     for(int i=0; i<__actorActionChangedEvents.size(); i++)
     {
         events.emit(__actorActionChangedEvents[i]);
     }
     __actorActionChangedEvents.clear();
+    
+    // 派发伤害事件
+    for(int i=0; i<__damageEvents.size(); i++)
+    {
+        events.emit(__damageEvents[i]);
+    }
+    __damageEvents.clear();
 }
 
 void MeleeSystem::drawDebugArea(cocos2d::Rect rect)

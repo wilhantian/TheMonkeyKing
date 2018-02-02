@@ -37,6 +37,14 @@ void setActorAniamte(std::map<std::string, AnimateInfo>& animateMap, std::string
     actions.push_back("melee_down");
     actions.push_back("melee_left");
     actions.push_back("melee_right");
+    actions.push_back("death_up");
+    actions.push_back("death_down");
+    actions.push_back("death_left");
+    actions.push_back("death_right");
+    actions.push_back("corpse_up");
+    actions.push_back("corpse_down");
+    actions.push_back("corpse_left");
+    actions.push_back("corpse_right");
     
     for(int i=0; i<actions.size(); i++)
     {
@@ -64,6 +72,7 @@ bool HelloWorld::init()
         e.assign<SpriteComp>(sprite);
         e.assign<PositionComp>(400, 200);
         e.assign<VelocityComp>(0, 0);
+        e.assign<HealthComp>(3);
         
         b2BodyDef def;
         def.type = b2BodyType::b2_dynamicBody;
@@ -85,6 +94,7 @@ bool HelloWorld::init()
         e.assign<PositionComp>(100, 80);
         e.assign<VelocityComp>(0.5, 0.22);
         e.assign<AnimateComp>("anim%02d.png", 2);
+        e.assign<HealthComp>(4);
         
         b2BodyDef def;
         def.type = b2BodyType::b2_dynamicBody;

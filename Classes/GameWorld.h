@@ -214,13 +214,14 @@ struct ControllableComp
 
 struct MeleeComp
 {
-    MeleeComp(cocos2d::Size area=cocos2d::Size::ZERO):area(area)
+    MeleeComp(cocos2d::Size area=cocos2d::Size::ZERO, int damage=1):area(area),damage(damage)
     {
     }
     
     cocos2d::Size area;//攻击范围
     
     bool isRunning = false;
+    int damage;
 };
 
 struct HealthComp
@@ -315,6 +316,7 @@ private:
     
 private:
     std::vector<ActorActionChangedEvent> __actorActionChangedEvents;
+    std::vector<DamageEvent> __damageEvents;
 };
 
 // HealthSystem
@@ -385,6 +387,14 @@ public:
         ActionState action = actor->action;
         
         if(action == ActionState::Melee)
+        {
+            return;
+        }
+        if(action == ActionState::Death)
+        {
+            return;
+        }
+        if(action == ActionState::Corpse)
         {
             return;
         }
